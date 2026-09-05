@@ -8,9 +8,8 @@ import team.projectpulse.rubric.Rating;
 import team.projectpulse.student.Student;
 import team.projectpulse.student.StudentRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import team.projectpulse.system.UserUtils;
 
 import java.time.Clock;
 import java.time.DayOfWeek;
@@ -31,13 +30,15 @@ public class EvaluationService {
     private final StudentRepository studentRepository;
     private final SectionRepository sectionRepository;
     private final Clock clock; // Clock bean is defined in PeerEvaluationToolApplication.java, this object is for unit testing purposes.
+    private final UserUtils userUtils;
 
 
-    public EvaluationService(PeerEvaluationRepository evaluationRepository, StudentRepository studentRepository, SectionRepository sectionRepository, Clock clock) {
+    public EvaluationService(PeerEvaluationRepository evaluationRepository, StudentRepository studentRepository, SectionRepository sectionRepository, Clock clock, UserUtils userUtils) {
         this.evaluationRepository = evaluationRepository;
         this.studentRepository = studentRepository;
         this.sectionRepository = sectionRepository;
         this.clock = clock;
+        this.userUtils = userUtils;
     }
 
     public PeerEvaluation addPeerEvaluation(PeerEvaluation newPeerEvaluation) {
@@ -171,10 +172,8 @@ public class EvaluationService {
 
         List<PeerEvaluationAverage> peerEvaluationAverages = weeks.stream().map(week -> getPeerEvaluationAverage(week, student)).collect(Collectors.toList());
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         // If the user is a student, do not include private comments in the summaries
-        if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_student"))) {
+        if (userUtils.hasRole("ROLE_student")) {
             peerEvaluationAverages.forEach(peerEvaluationAverage -> peerEvaluationAverage.setPrivateComments(null));
         }
 

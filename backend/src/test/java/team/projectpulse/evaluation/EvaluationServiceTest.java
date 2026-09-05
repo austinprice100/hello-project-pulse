@@ -9,6 +9,7 @@ import team.projectpulse.section.Section;
 import team.projectpulse.section.SectionRepository;
 import team.projectpulse.student.Student;
 import team.projectpulse.student.StudentRepository;
+import team.projectpulse.system.UserUtils;
 import team.projectpulse.system.exception.PeerEvaluationIllegalArgumentException;
 import team.projectpulse.team.Team;
 import team.projectpulse.user.MyUserPrincipal;
@@ -44,6 +45,8 @@ class EvaluationServiceTest {
     SectionRepository sectionRepository;
     @Mock
     Clock clock; // Mock the clock bean
+    @Mock
+    UserUtils userUtils;
 
     @InjectMocks
     EvaluationService evaluationService;
